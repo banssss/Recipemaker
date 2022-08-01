@@ -1,0 +1,161 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type ProductsCategory {
+  id: String!
+  name: String!
+}
+
+type Level {
+  id: String!
+  level: String!
+}
+
+type RecipesCategory {
+  id: String!
+  name: String!
+}
+
+type User {
+  id: String!
+  userAccount: String!
+  name: String!
+  nickname: String!
+  phone: String!
+  email: String!
+  point: String!
+  creditInfo: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  materials: [Material!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Material {
+  id: String!
+  name: String!
+  recipes: [Recipe!]!
+  users: [User!]!
+}
+
+type Recipe {
+  id: String!
+  recipeTitle: String!
+  recipeSubtitle: String!
+  recipeDescription: String!
+  recipesCategory: RecipesCategory!
+  level: Level!
+  materials: [Material!]!
+}
+
+type Product {
+  id: String!
+  productName: String!
+  price: Int!
+  termValidity: DateTime!
+  productWeight: Float!
+  productDescription: String!
+  amount: Int!
+  productsCategory: ProductsCategory!
+  matchRecipe: Recipe!
+  productsTags: [ProductsTag!]!
+}
+
+type ProductsTag {
+  id: String!
+  name: String!
+  products: [Product!]!
+}
+
+type Query {
+  fetchProducts: [Product!]!
+  fetchProductsWithDeleted: [Product!]!
+  fetchProduct(productId: String!): Product!
+  fetchRecipes: [Recipe!]!
+  fetchRecipe(recipeId: String!): Recipe!
+  fetchUsers: [User!]!
+  fetchUser(userMail: String!): User!
+  fetchLoginUser: User!
+  fetchProductsCategories: [ProductsCategory!]!
+}
+
+type Mutation {
+  userLogin(email: String!, password: String!): String!
+  restoreAccessToken: String!
+  createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+  deleteProduct(productId: String!): Boolean!
+  restoreProduct(productId: String!): Boolean!
+  createRecipe(createRecipeInput: CreateRecipeInput!): Recipe!
+  updateRecipe(recipeId: String!, updateRecipeInput: UpdateRecipeInput!): Recipe!
+  deleteRecipe(recipeId: String!): Boolean!
+  createLevel(recipeLevel: String!): Level!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(userMail: String!, updateUserInput: UpdateUserInput!): User!
+  updateUserPwd(userPwd: String!, newPwd: String!): User!
+  deleteUser(userMail: String!): Boolean!
+  deleteLoginUser: Boolean!
+  restoreDeletedUser(userId: String!): Boolean!
+  createProductsCategory(name: String!): ProductsCategory!
+  updateProductsCategory(productsCategoryId: String!, updateProductsCategoryName: String!): ProductsCategory!
+}
+
+input CreateProductInput {
+  productName: String!
+  price: Int!
+  termValidity: DateTime!
+  productWeight: Float!
+  productDescription: String!
+  amount: Int!
+  productsCategoryId: String!
+  matchRecipe: CreateRecipeInput!
+  productsTags: [String!]!
+}
+
+input CreateRecipeInput {
+  recipeTitle: String!
+  recipeSubtitle: String!
+  recipeDescription: String!
+}
+
+input UpdateProductInput {
+  productName: String
+  price: Int
+  termValidity: DateTime
+  productWeight: Float
+  productDescription: String
+  amount: Int
+  productsCategoryId: String
+  matchRecipe: CreateRecipeInput
+  productsTags: [String!]
+}
+
+input UpdateRecipeInput {
+  recipeTitle: String
+  recipeSubtitle: String
+  recipeDescription: String
+}
+
+input CreateUserInput {
+  userAccount: String!
+  email: String!
+  password: String!
+  name: String!
+  nickname: String!
+  phone: String!
+}
+
+input UpdateUserInput {
+  userAccount: String!
+  email: String
+  password: String!
+  name: String
+  nickname: String
+  phone: String
+  newPassword: String
+}
