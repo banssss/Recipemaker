@@ -6,7 +6,8 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:3000/login/google',
+      // callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      callbackURL: 'http://localhost:3000/login/google', // For code review
       scope: ['email', 'profile'],
       // google api에서 허용한 부분들을 아래와 같이 추가 가능.
       // scope: [
@@ -17,9 +18,9 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
   }
 
   // validate 안의 arg 들이 변수명에 상관없이, 정해진 순서대로 들어오는것 확인. 자세한 부분은 추가 탐구가 필요합니다..
-  validate(accessToken, refreshToken, profile) {
-    console.log(accessToken, '  ##  AccessToken');
-    console.log(refreshToken, '  ##  refreshToken');
+  validate(_, __, profile) {
+    // console.log(_, '  ##  _');
+    // console.log(__, '  ##  __');
     console.log(profile, '  &&   profile');
     return {
       userAccount: profile._json.email,

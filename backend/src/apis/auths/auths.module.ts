@@ -9,6 +9,8 @@ import { JwtAccessStrategy } from 'src/commons/auth/jwt-access.strategy';
 import { JwtRefreshStrategy } from 'src/commons/auth/jwt-refresh.strategy';
 import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
 import { AuthsController } from './auths.controller';
+import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
+import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { AuthsController } from './auths.controller';
     JwtRefreshStrategy, // Refresh Token 을 위한 Strategy
     JwtAccessStrategy, // Strategy 사용을 위한 provider 추가
     JwtGoogleStrategy, // Jwt-google 등록
+    JwtNaverStrategy, // Naver Strategy 등록
+    JwtKakaoStrategy, // Kakao Strategy 등록
     AuthsResolver, //
     AuthsService,
     UsersService,

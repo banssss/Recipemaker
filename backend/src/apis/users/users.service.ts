@@ -53,7 +53,7 @@ export class UsersService {
       where: { email: userMail },
     });
     // 수정시 newPassword 가 입력된다면, 입력된 newPassword로 비밀번호 변경
-    let userInput: any;
+    let userInput: any; // 새로 지정할 userInput 선언
 
     // newPassword 입력되었을 시, 비밀번호 hash로 암호화 후 userInput에 저장
     if (updateUserInput.newPassword) {
