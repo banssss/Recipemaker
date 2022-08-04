@@ -1,12 +1,10 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { RECIPE_LEVEL } from 'src/commons/type/enums';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum RecipeLevel {
-  EXTREME = 'extreme',
-  HARD = 'hard',
-  NORMAL = 'normal',
-  EASY = 'easy',
-}
+registerEnumType(RECIPE_LEVEL, {
+  name: 'RECIPE_LEVEL',
+});
 
 @Entity()
 @ObjectType()
@@ -17,9 +15,9 @@ export class Level {
 
   @Column({
     type: 'enum',
-    enum: RecipeLevel,
-    default: RecipeLevel.EASY,
+    enum: RECIPE_LEVEL,
+    default: RECIPE_LEVEL.EASY,
   })
-  @Field(() => String)
-  level: RecipeLevel;
+  @Field(() => RECIPE_LEVEL)
+  level: string;
 }

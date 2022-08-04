@@ -28,9 +28,7 @@ export class AuthsService {
   getAccessToken({ user }) {
     return this.jwtService.sign(
       { email: user.email, sub: user.id },
-      // { secret: 'myAccessKey', expiresIn: '1h' },
-      { secret: 'myAccessKey', expiresIn: '15s' },
-      // 테스트용, AccessToken 주기 15초 설정
+      { secret: 'myAccessKey', expiresIn: '1h' },
     );
   }
 

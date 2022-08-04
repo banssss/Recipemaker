@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Level, RecipeLevel } from './entities/level.entity';
+import { Level } from './entities/level.entity';
 import { LevelsService } from './levels.service';
 
 @Resolver()
@@ -8,7 +8,7 @@ export class LevelsResolver {
 
   @Mutation(() => Level)
   createLevel(
-    @Args('recipeLevel') recipeLevel: RecipeLevel, //
+    @Args('recipeLevel') recipeLevel: string, //
   ) {
     return this.levelsService.create({ recipeLevel });
   }

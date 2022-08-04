@@ -9,7 +9,14 @@ type ProductsCategory {
 
 type Level {
   id: String!
-  level: String!
+  level: RECIPE_LEVEL!
+}
+
+enum RECIPE_LEVEL {
+  EXTREME
+  HARD
+  NORMAL
+  EASY
 }
 
 type RecipesCategory {
@@ -72,6 +79,21 @@ type ProductsTag {
   products: [Product!]!
 }
 
+type Payment {
+  id: String!
+  impUid: String!
+  status: PAYMENT_STATUS_ENUM!
+  paymentTotal: Int!
+  createdAt: DateTime!
+  product: Product!
+  user: User!
+}
+
+enum PAYMENT_STATUS_ENUM {
+  PAYMENT
+  CANCEL
+}
+
 type Query {
   fetchProducts: [Product!]!
   fetchProductsWithDeleted: [Product!]!
@@ -87,6 +109,7 @@ type Query {
 type Mutation {
   userLogin(email: String!, password: String!): String!
   restoreAccessToken: String!
+  createPayment(impUid: String!, paymentTotal: Int!): Payment!
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
   deleteProduct(productId: String!): Boolean!
