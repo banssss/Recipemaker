@@ -11,6 +11,9 @@ services:
       - 3000:3000
     env_file:
       - ./.env
+    environment:
+      - TZ=Asia/Seoul
+      # 혜인님께서 알려주신 TZ Setting. 천사가 따로없는것.
 
   my-database:
     platform: linux/x86_64
@@ -18,5 +21,8 @@ services:
     environment:
       MYSQL_DATABASE: 'mydocker04'
       MYSQL_ROOT_PASSWORD: 'root'
+      TZ: Asia/Seoul
+      # 혜인님께서 알려주신 TZ Setting. 천사가 따로없는것.
+
     ports:
       - 3306:3306
