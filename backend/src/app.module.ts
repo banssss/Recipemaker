@@ -9,10 +9,12 @@ import { RecipesModule } from './apis/recipes/recipes.module';
 import { UsersModule } from './apis/users/users.module';
 import { AuthsModule } from './apis/auths/auths.module';
 import { PaymentsModule } from './apis/payments/payments.module';
+import { IamportsModule } from './apis/iamports/iamports.module';
 
 @Module({
   imports: [
     AuthsModule, // 인증 모듈 추가
+    IamportsModule, // 아임포트 모듈 추가
     PaymentsModule, // 결제내역 모듈 추가
     ProductsModule,
     RecipesModule,
