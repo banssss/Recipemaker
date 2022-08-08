@@ -65,10 +65,66 @@
           }
         );
       }
+      function mypaymentforpoints() {
+        const myAmount = Number(document.getElementById("amount2").value);
+
+        const IMP = window.IMP; // 생략 가능
+        IMP.init("imp68404678"); // Example: imp00000000
+        IMP.request_pay(
+          {
+            // param
+            pg: "nice",
+            pay_method: "card",
+            name: "Bans Project 포인트 충전",
+            amount: myAmount,
+            buyer_email: "gildong@gmail.com",
+            buyer_name: "홍길동",
+            buyer_tel: "010-4242-4242",
+            buyer_addr: "서울특별시 강남구 신사동",
+            buyer_postcode: "01181",
+            m_redirect_url: "", // 모바일 결제후 리다이렉트될 주소!!
+          },
+          async (rsp) => {
+            // callback
+            if (rsp.success) {
+              // 결제 성공시
+              console.log(rsp);
+
+              const data = await axios.post(
+                "http://localhost:3000/graphql",
+                {
+                  query: `
+                      mutation {
+                        createPaymentForPoints(impUid: "${rsp.imp_uid}", paymentTotal: ${rsp.paid_amount}) {
+                          id
+                        }
+                      }
+                    `,
+                },
+                {
+                  headers: {
+                    authorization: "Bearer YOUR_ACCESS_TOKEN",
+                  },
+                }
+              );
+
+              console.log(data);
+            } else {
+              // 결제 실패시
+            }
+          }
+        );
+      }
     </script>
   </head>
   <body>
-    결제할 금액: <input type="text" id="amount" />
-    <button onclick="mypayment()">결제하기</button>
+    <div>
+      결제할 금액: <input type="text" id="amount" />
+      <button onclick="mypayment()">결제하기</button>
+    </div>
+    <div>
+      포인트 충전할 금액: <input type="text" id="amount2" />
+      <button onclick="mypaymentforpoints()">충전하기</button>
+    </div>
   </body>
 </html>
