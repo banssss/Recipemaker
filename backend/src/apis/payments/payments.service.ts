@@ -71,9 +71,9 @@ export class PaymentsService {
     });
 
     // 4. 생성한 정보 저장하기
-    await this.paymentsRepository.save(payment);
+    const result = await this.paymentsRepository.save(payment);
 
     // 5. 결제/취소 내역 결과 프론트엔드에 돌려주기
-    return payment;
+    return result;
   }
 }
