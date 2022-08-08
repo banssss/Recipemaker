@@ -28,7 +28,7 @@ export class PaymentsResolver {
 
     // 2. imp_uid로 아임포트 서버에서 결제 정보 조회
     const getPaymentData = await this.iamportsService.getImpPaymentData({
-      access_token: impToken.data.response.access_token,
+      access_token: impToken,
       imp_uid: impUid,
     });
 
@@ -62,26 +62,18 @@ export class PaymentsResolver {
   ) {
     /***   취소 검증 시작   ***/
 
-    // 1. 입력받은 impUid 값을 통해 payment table에서 data 찾아오기.
-    const payment = await this.paymentsService.findOne({ impUid });
-
-    // 1-1. table 에 저장된 데이터가 조회되지 않을 때,
-    if (!payment) {
-      throw new UnprocessableEntityException(
-        '요청하신 정보에 해당되는 결제데이터가 없습니다.',
-      );
-    }
-    // 1-2. 이미 취소 된 결제인지 status 검증.
-    if (payment.status === PAYMENT_STATUS_ENUM.CANCEL) {
-      throw new UnprocessableEntityException('이미 취소된 결제입니다.');
-    }
+    // 1. 입력받은 impUid 값을 통해 payment table에서 data 검증하기.
+    await this.paymentsService.checkIsAbleToCancel({
+      impUid,
+      user: context.req.user,
+    });
 
     // 2. 아임포트 억세스 토큰 발급받기
     const impToken = await this.iamportsService.getImpAccessToken();
 
     // 3. imp_uid로 아임포트 서버에서 결제 정보 조회
     const getPaymentData = await this.iamportsService.getImpPaymentData({
-      access_token: impToken.data.response.access_token,
+      access_token: impToken,
       imp_uid: impUid,
     });
 
@@ -92,7 +84,7 @@ export class PaymentsResolver {
 
     /*** 부분환불을 위한 전처리(아임포트 Docs 참조) ***/
     // 3-1. 조회한 결제정보로부터 imp_uid, amount(결제금액), cancel_amount(환불된 총 금액) 추출
-    const { amount, cancel_amount } = paymentData;
+    const { imp_uid, amount, cancel_amount } = paymentData;
     // 3-2. 환불 가능 금액 (= 결제금액 - 환불 된 총 금액) 계산
     const cancelableAmount = amount - cancel_amount;
     if (cancelableAmount <= 0) {
@@ -103,9 +95,9 @@ export class PaymentsResolver {
 
     // 4. 아임포트 서버에서 결제 취소 api 요청
     const canceledPayment = await this.iamportsService.cancelImpPaymentData({
-      access_token: impToken.data.response.access_token,
+      access_token: impToken,
       reason: '이곳에 환불사유를 입력해주세요',
-      imp_uid: impUid,
+      imp_uid,
       cancel_request_amount: amount, // 부분환불은 테스트모드에서 지원하지 않았습니다....!
       cancelableAmount, // 부분환불은 테스트모드에서 지원하지 않았습니다....!
     });

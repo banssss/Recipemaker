@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PAYMENT_STATUS_ENUM } from 'src/commons/type/enums';
 import { Repository } from 'typeorm';
@@ -15,25 +19,38 @@ export class PaymentsService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  // impUid 를 기준으로, payment 정보 찾아오기 (결제든 취소든 impUid값으로 찾는다)
-  // --> 데이터가 2개일 경우 (결제 / 취소) 둘 중 하나만 찾아온다.
-  // (둘 중 어떤 데이터를 찾아오는지는 정확하지 않다. 필요시 로직 수정 예정)
-  async findOne({ impUid }) {
-    const payment = await this.paymentsRepository.findOne({
-      where: { impUid },
+  async checkIsAbleToCancel({ impUid, user }) {
+    // payment table에 결제 내역이 저장되어있는지 검증
+    const paidPayment = await this.paymentsRepository.findOne({
+      where: {
+        impUid,
+        user: { id: user.id },
+        status: PAYMENT_STATUS_ENUM.PAYMENT,
+      },
     });
-    return payment;
+    if (!paidPayment) {
+      throw new UnprocessableEntityException(
+        '기존 결제내역이 존재하지 않아 취소할 수 없습니다.',
+      );
+    }
+    // payment table에 이미 취소 내역이 저장되어있는지 검증
+    const canceledPayment = await this.paymentsRepository.findOne({
+      where: { impUid, status: PAYMENT_STATUS_ENUM.CANCEL },
+    });
+    if (canceledPayment) {
+      throw new UnprocessableEntityException('이미 취소된 결제입니다.');
+    }
   }
 
   // 결제내역 (payment 생성)
   async create({ impUid, paymentTotal, user, status }) {
     // 1. 결제내역 테이블(Payment)에서, 기존 내역 확인
     const checkPayment = await this.paymentsRepository.findOne({
-      where: { impUid },
+      where: { impUid, status },
     });
 
     // 1-1. 이미 저장된 결제/취소내역이라면, 오류메시지 전달
-    if (checkPayment && checkPayment.status === status) {
+    if (checkPayment) {
       if (status === PAYMENT_STATUS_ENUM.PAYMENT)
         throw new ConflictException('이미 저장된 결제내역입니다.');
       if (status === PAYMENT_STATUS_ENUM.CANCEL)

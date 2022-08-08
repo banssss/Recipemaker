@@ -9,7 +9,7 @@ import axios from 'axios';
 export class IamportsService {
   async getImpAccessToken() {
     try {
-      const token = await axios({
+      const result = await axios({
         url: 'https://api.iamport.kr/users/getToken',
         method: 'post', // POST method
         headers: { 'Content-Type': 'application/json' }, // "Content-Type": "application/json"
@@ -18,7 +18,7 @@ export class IamportsService {
           imp_secret: process.env.IAMPORT_REST_API_SECRET, // REST API Secret
         },
       });
-      return token;
+      return result.data.response.access_token;
     } catch (e) {
       // 아임포트 서버에서 Access Token 발급에 실패했을 때
       throw new HttpException(e.response.data.message, e.response.status);
