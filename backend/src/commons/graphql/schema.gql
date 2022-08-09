@@ -19,6 +19,12 @@ enum RECIPE_LEVEL {
   EASY
 }
 
+type ProductsTag {
+  id: String!
+  name: String!
+  products: [Product!]!
+}
+
 type RecipesCategory {
   id: String!
   name: String!
@@ -73,12 +79,6 @@ type Product {
   productsTags: [ProductsTag!]!
 }
 
-type ProductsTag {
-  id: String!
-  name: String!
-  products: [Product!]!
-}
-
 type Payment {
   id: String!
   impUid: String!
@@ -98,18 +98,20 @@ type Query {
   fetchProducts: [Product!]!
   fetchProductsWithDeleted: [Product!]!
   fetchProduct(productId: String!): Product!
+  fetchProductsCategories: [ProductsCategory!]!
   fetchRecipes: [Recipe!]!
   fetchRecipe(recipeId: String!): Recipe!
   fetchUsers: [User!]!
   fetchUser(userMail: String!): User!
   fetchLoginUser: User!
-  fetchProductsCategories: [ProductsCategory!]!
 }
 
 type Mutation {
   userLogin(email: String!, password: String!): String!
   restoreAccessToken: String!
+  uploadFile(files: [Upload!]!): [String!]!
   createIamportAuth: Boolean!
+  createLevel(recipeLevel: String!): Level!
   createPayment(impUid: String!, paymentTotal: Int!): Payment!
   cancelPayment(impUid: String!): Payment!
   createPaymentForPoints(impUid: String!, paymentTotal: Int!): Payment!
@@ -118,19 +120,22 @@ type Mutation {
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
   deleteProduct(productId: String!): Boolean!
   restoreProduct(productId: String!): Boolean!
+  createProductsCategory(name: String!): ProductsCategory!
+  updateProductsCategory(productsCategoryId: String!, updateProductsCategoryName: String!): ProductsCategory!
+  createProductsImgsAll(images: [String!]!): [String!]!
   createRecipe(createRecipeInput: CreateRecipeInput!): Recipe!
   updateRecipe(recipeId: String!, updateRecipeInput: UpdateRecipeInput!): Recipe!
   deleteRecipe(recipeId: String!): Boolean!
-  createLevel(recipeLevel: String!): Level!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(userMail: String!, updateUserInput: UpdateUserInput!): User!
   updateUserPwd(userPwd: String!, newPwd: String!): User!
   deleteUser(userMail: String!): Boolean!
   deleteLoginUser: Boolean!
   restoreDeletedUser(userId: String!): Boolean!
-  createProductsCategory(name: String!): ProductsCategory!
-  updateProductsCategory(productsCategoryId: String!, updateProductsCategoryName: String!): ProductsCategory!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 input CreateProductInput {
   productName: String!
@@ -142,6 +147,7 @@ input CreateProductInput {
   productsCategoryId: String!
   matchRecipe: CreateRecipeInput!
   productsTags: [String!]!
+  productsImgs: [String!]!
 }
 
 input CreateRecipeInput {
@@ -160,6 +166,7 @@ input UpdateProductInput {
   productsCategoryId: String
   matchRecipe: CreateRecipeInput
   productsTags: [String!]
+  productsImgs: [String!]
 }
 
 input UpdateRecipeInput {

@@ -36,4 +36,8 @@ export class CreateProductInput {
   // 상품에 달린 태그를 함께 등록하기 위한 Field (N:M)
   @Field(() => [String])
   productsTags: string[];
+
+  // 상품에 연결된 이미지(url)를 함께 등록하기 위한 Field (1:N)
+  @Field(() => [String])
+  productsImgs: string[];
 }

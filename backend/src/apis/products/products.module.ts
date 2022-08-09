@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { FilesService } from '../files/files.service';
+import { ProductsImg } from '../productsImgs/entities/productsImg.entity';
 import { ProductsTag } from '../productsTags/entities/productsTag.entity';
 import { Recipe } from '../recipes/entities/recipe.entity';
 import { Product } from './entities/product.entity';
@@ -10,13 +12,15 @@ import { ProductsService } from './products.service';
   imports: [
     TypeOrmModule.forFeature([
       Product, // Repository 추가를 위한 모듈 추가.
-      Recipe,
       ProductsTag,
+      ProductsImg,
+      Recipe,
     ]),
   ],
   providers: [
     ProductsResolver, //
     ProductsService,
+    FilesService,
   ],
 })
 export class ProductsModule {}

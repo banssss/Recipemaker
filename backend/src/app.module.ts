@@ -10,17 +10,21 @@ import { UsersModule } from './apis/users/users.module';
 import { AuthsModule } from './apis/auths/auths.module';
 import { PaymentsModule } from './apis/payments/payments.module';
 import { IamportsModule } from './apis/iamports/iamports.module';
+import { ProductsImgsModule } from './apis/productsImgs/productsImgs.module';
+import { FilesModule } from './apis/files/files.module';
 
 @Module({
   imports: [
-    AuthsModule, // 인증 모듈 추가
-    IamportsModule, // 아임포트 모듈 추가
-    PaymentsModule, // 결제내역 모듈 추가
-    ProductsModule,
-    RecipesModule,
+    AuthsModule,
+    FilesModule, // 파일 관리 모듈 추가
+    IamportsModule,
     LevelsModule,
-    UsersModule,
+    PaymentsModule,
+    ProductsModule,
     ProductsCategoriesModule,
+    ProductsImgsModule, // 상품 이미지 모듈 추가
+    RecipesModule,
+    UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
