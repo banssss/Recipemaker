@@ -1,6 +1,8 @@
 import {
   HttpException,
   Injectable,
+  NotFoundException,
+  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import axios from 'axios';
@@ -21,6 +23,9 @@ export class IamportsService {
       return result.data.response.access_token;
     } catch (e) {
       // 아임포트 서버에서 Access Token 발급에 실패했을 때
+      // (Docs - 401 imp_key, imp_secret 인증에 실패한 경우)
+      if (e.response.status === 401)
+        throw new UnauthorizedException(e.response.data.message);
       throw new HttpException(e.response.data.message, e.response.status);
     }
   }
@@ -35,8 +40,14 @@ export class IamportsService {
       return paymentData;
     } catch (e) {
       // 아임포트 서버에서 결제 정보를 가져올 수 없었을 때
-      throw new UnprocessableEntityException(e.response.data.message);
-      // throw new HttpException(e.response.data.message, e.response.status);
+      // (Docs - 401	인증 Token이 전달되지 않았거나 유효하지 않은 경우)
+      if (e.response.status === 401)
+        throw new UnauthorizedException(e.response.data.message);
+      // (Docs - 404 유효하지 않은 imp_uid)
+      if (e.response.status === 401)
+        throw new NotFoundException(e.response.data.message);
+      // throw new UnprocessableEntityException(e.response.data.message); // 과제용
+      throw new HttpException(e.response.data.message, e.response.status);
     }
   }
 
@@ -67,6 +78,9 @@ export class IamportsService {
       return result;
     } catch (e) {
       // 아임포트 서버에서 환불 과정을 진행할 수 없을 때
+      // (Docs - 401	인증 Token이 전달되지 않았거나 유효하지 않은 경우)
+      if (e.response.status === 401)
+        throw new UnauthorizedException(e.response.data.message);
       throw new HttpException(e.response.data.message, e.response.status);
     }
   }
