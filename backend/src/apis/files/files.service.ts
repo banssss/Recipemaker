@@ -21,8 +21,8 @@ export class FilesService {
         (el) =>
           new Promise((resolve, reject) => {
             el.createReadStream()
-              .pipe(storage.file(el.filename).createWriteStream())
-              .on('finish', () => resolve(`${bucket}/${el.filename}`))
+              .pipe(storage.file(`temp/${el.filename}`).createWriteStream())
+              .on('finish', () => resolve(`${bucket}/temp/${el.filename}`))
               .on('error', () => reject('Fail !!'));
           }),
       ),
