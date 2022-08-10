@@ -86,18 +86,22 @@ export class ProductsService {
     const createdTags = await Promise.all(
       productsTags.map(
         (el: string) =>
-          new Promise(async (resolve) => {
-            const tagName = el.replace('#', '');
-            const prevTag = await this.productsTagRepository.findOne({
-              where: { name: tagName },
-            });
-            if (prevTag) {
-              resolve(prevTag);
-            } else {
-              const newTag = await this.productsTagRepository.save({
-                name: tagName,
+          new Promise(async (resolve, reject) => {
+            try {
+              const tagName = el.replace('#', '');
+              const prevTag = await this.productsTagRepository.findOne({
+                where: { name: tagName },
               });
-              resolve(newTag);
+              if (prevTag) {
+                resolve(prevTag);
+              } else {
+                const newTag = await this.productsTagRepository.save({
+                  name: tagName,
+                });
+                resolve(newTag);
+              }
+            } catch (e) {
+              reject(e);
             }
           }),
       ),
@@ -135,20 +139,25 @@ export class ProductsService {
     });
 
     // 클라이언트에게 입력받은 상품 이미지 생성하여 함께 입력하기
-    const createdImgs = await Promise.all(
+    // const createdImgs = await Promise.all(
+    await Promise.all(
       productsImgs.map(
         (imgUrl: any) =>
-          new Promise(async (resolve) => {
-            const newImg = await this.productsImgRepository.save({
-              productsImgUrl: imgUrl,
-              product: { id: result.id }, // product 와 img 연결
-            });
-            resolve(newImg);
+          new Promise(async (resolve, reject) => {
+            try {
+              const newImg = await this.productsImgRepository.save({
+                productsImgUrl: imgUrl,
+                product: { id: result.id }, // product 와 img 연결
+              });
+              resolve(newImg);
+            } catch (e) {
+              reject(e);
+            }
           }),
       ),
     );
     // 생성된 이미지 출력 테스트
-    console.log(createdImgs);
+    // console.log(createdImgs);
 
     return result; // 생성된 데이터 정보 리턴
   }
@@ -182,12 +191,16 @@ export class ProductsService {
       await Promise.all(
         productsImgs.map(
           (imgUrl: any) =>
-            new Promise(async (resolve) => {
-              const newImg = await this.productsImgRepository.save({
-                productsImgUrl: imgUrl,
-                product: { id: productId }, // product 와 img 연결
-              });
-              resolve(newImg);
+            new Promise(async (resolve, reject) => {
+              try {
+                const newImg = await this.productsImgRepository.save({
+                  productsImgUrl: imgUrl,
+                  product: { id: productId }, // product 와 img 연결
+                });
+                resolve(newImg);
+              } catch (e) {
+                reject(e);
+              }
             }),
         ),
       );
