@@ -1,85 +1,59 @@
-# createProductsCategory
+# createUser
 
 mutation{
-  createProductsCategory(name:"찌개"){
+  createUser(
+    createUserInput:{
+      userAccount:"codecamp"
+      email:"codecamp@code.camp"
+      password:"password"
+      name:"Code Kim"
+      nickname:"COCAEM"
+      phone:"010-1111-2222"
+    }
+  ){
     id
+    userAccount
     name
+    nickname
+    phone
+    email
+    point
+    createdAt
+    updatedAt
   }
 }
 
-
-# createProduct
+# userLogin
 
 mutation{
-  createProduct(
-    createProductInput:{
-      productName:"연남동 김치찌개 밀키트",
-			price:15900,
-      termValidity:"2022-08-25",
-      productWeight:1200
-      productDescription:"연남동에서 만나던 통삼겹 김치찌개"
-      amount:35
-      productsCategoryId:"36630758-feca-443f-8ce6-5beda0c0635e"
-      matchRecipe:{
-        recipeTitle:"연남동 김치찌개 레시피"
-        recipeSubtitle:"연남동 통삼겹 김치찌개 레시피"
-        recipeDescription:"자르지 않은 통삼겹과 비법소스를 만든 후 다넣고 끓입세"
-      }
-      productsTags:["#연남동", "#통삼겹", "#비쥬얼대박", "#연남동김치찌개"],
-      productsImgs:[
-            "codecamp-backend04-storage/yeonnamdong-kimchizzigae_main.jpg",
-            "codecamp-backend04-storage/yeonnamdong-kimchizzigae_sub.jpg",
-            "codecamp-backend04-storage/yeonnamdong-kimchizzigae_recipe.jpg"
-        ]
-    }
-  ){
+  userLogin(
+    email:"codecamp@code.camp"
+    password:"password"
+  )
+}
+
+# graphql header
+
+{
+  "Authorization" : "Bearer YOUR_ACCESS_TOKEN"
+}
+
+# logout
+
+mutation{
+  logout
+}
+
+# fetchLoginUser
+
+query{
+  fetchLoginUser{
     id
-    productName
-    price
-    termValidity
-    productWeight
-    productDescription
-    amount
-    productsCategory{
-      id
-    }
-    matchRecipe{
-      recipeTitle
-      recipeSubtitle
-      recipeDescription
-    }
-    productsTags{
-      id
-      name
-    }
   }
 }
 
-# updateProduct
+# restoreAccessToken
 
 mutation{
-  updateProduct(
-    productId:"26ffea60-d859-48b2-b5b1-3ba08141f970",
-    updateProductInput:{
-      productName:"연남동 김치찌개 밀키트 업그레이드 버전"
-      price:16900
-      termValidity:"2022-08-30"
-      productWeight:1350
-      productDescription:"통삼겹이 두배로 들어간 더블 통삼겹 김치찌개"
-      amount:10
-      productsImgs:[
-            "codecamp-backend04-storage/yeonnamdong-kimchizzigae_main.jpg",
-            "codecamp-backend04-storage/yeonnamdong-kimchizzigae_sub.jpg",
-            "codecamp-backend04-storage/yeonnamdong-kimchizzigae_recipe.jpg"
-        ]
-    }
-  ){
-    id
-    productName
-    price
-    termValidity
-    productWeight
-    productDescription
-    amount
-  }
+  restoreAccessToken
 }

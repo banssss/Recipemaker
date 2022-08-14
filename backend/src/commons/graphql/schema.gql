@@ -109,6 +109,7 @@ type Query {
 type Mutation {
   userLogin(email: String!, password: String!): String!
   restoreAccessToken: String!
+  logout: String!
   uploadFile(files: [Upload!]!): [String!]!
   createIamportAuth: Boolean!
   createLevel(recipeLevel: String!): Level!

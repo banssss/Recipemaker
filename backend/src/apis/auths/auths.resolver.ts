@@ -1,16 +1,28 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthsService } from './auths.service';
 import { UsersService } from '../users/users.service';
-import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  UnprocessableEntityException,
+  UseGuards,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { IContext } from 'src/commons/type/context';
-import { GqlAuthRefreshGuard } from 'src/commons/auth/gql-auth.guard';
+import {
+  GqlAuthAccessGuard,
+  GqlAuthRefreshGuard,
+} from 'src/commons/auth/gql-auth.guard';
+import { Cache } from 'cache-manager';
 
 @Resolver()
 export class AuthsResolver {
   constructor(
     private readonly usersService: UsersService,
     private readonly authsService: AuthsService, //
+    // redis 사용을 위한 cacheManager 선언
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   @Mutation(() => String)
@@ -50,5 +62,46 @@ export class AuthsResolver {
     @Context() context: IContext, //
   ) {
     return this.authsService.getAccessToken({ user: context.req.user });
+  }
+
+  // LogOut
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => String)
+  async logout(
+    @Context() context: IContext, //
+  ) {
+    // 유저의 accessToken, refreshToken 추출
+    let accessToken = context.req.headers.authorization;
+    accessToken = accessToken.replace('Bearer ', '');
+    let refreshToken = context.req.headers.cookie;
+    refreshToken = refreshToken.replace('refreshToken=', '');
+
+    // jsonwebtoken 을 이용한 토큰 검증
+    const { validAccessToken, validRefreshToken } =
+      this.authsService.verifyTokens({
+        accessToken,
+        refreshToken,
+      });
+
+    // logout 을 실행한 순간의 시간
+    const now = new Date().getTime();
+
+    // exp 에서 현재 시간(밀리세컨즈 제거)을 뺀 값을 ttl로 설정
+    const accessTokenExp = validAccessToken.exp;
+    const accessTokenTtl = accessTokenExp - Number(String(now).slice(0, -3));
+    const refreshTokenExp = validRefreshToken.exp;
+    const refreshTokenTtl = refreshTokenExp - Number(String(now).slice(0, -3));
+
+    // Redis에 토큰 저장
+    await this.cacheManager.set(`accessToken:${accessToken}`, 'accessToken', {
+      ttl: accessTokenTtl,
+    });
+    await this.cacheManager.set(
+      `refreshToken:${refreshToken}`,
+      'refreshToken',
+      { ttl: refreshTokenTtl },
+    );
+
+    return '로그아웃에 성공했습니다.';
   }
 }

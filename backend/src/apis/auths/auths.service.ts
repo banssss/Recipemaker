@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthsService {
@@ -13,6 +14,7 @@ export class AuthsService {
   setRefreshToken({ user, res }) {
     const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
+      // { secret: process.env.REFRESH_SECRET, expiresIn: '2w' },
       { secret: 'myRefreshKey', expiresIn: '2w' },
     );
 
@@ -28,6 +30,7 @@ export class AuthsService {
   getAccessToken({ user }) {
     return this.jwtService.sign(
       { email: user.email, sub: user.id },
+      // { secret: process.env.ACCESS_SECRET, expiresIn: '1h' },
       { secret: 'myAccessKey', expiresIn: '1h' },
     );
   }
@@ -50,5 +53,27 @@ export class AuthsService {
     res.redirect(
       'http://localhost:5500/codecamp-backend-04/main-project/frontend/login/index.html',
     ); // for code review
+  }
+
+  // jsonwebtoken 을 이용한 토큰 검증
+  verifyTokens({ accessToken, refreshToken }) {
+    try {
+      const validAccessToken = jwt.verify(accessToken, 'myAccessKey');
+      const validRefreshToken = jwt.verify(refreshToken, 'myRefreshKey');
+      // const validAccessToken = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+      // const validRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+      if (
+        typeof validAccessToken === 'object' &&
+        typeof validRefreshToken === 'object'
+      ) {
+        return { validAccessToken, validRefreshToken };
+      } else {
+        throw new Error(`Token의 payload값이 객체 형태로 반환되지 않았습니다.
+        accessToken 내용 : ${validAccessToken}
+        refreshToken 내용 : ${validRefreshToken}`);
+      }
+    } catch (error) {
+      throw new UnauthorizedException(error.response.message);
+    }
   }
 }

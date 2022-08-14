@@ -1,5 +1,5 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsCategoriesModule } from './apis/productsCategories/productsCategories.module';
@@ -12,6 +12,8 @@ import { PaymentsModule } from './apis/payments/payments.module';
 import { IamportsModule } from './apis/iamports/iamports.module';
 import { ProductsImgsModule } from './apis/productsImgs/productsImgs.module';
 import { FilesModule } from './apis/files/files.module';
+import { RedisClientOptions } from 'redis';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -40,6 +42,12 @@ import { FilesModule } from './apis/files/files.module';
       entities: [__dirname + '/apis/**/*.entity.*'],
       synchronize: true,
       logging: true,
+    }),
+    // redis 연결을 위한 CacheModule 추가
+    CacheModule.register<RedisClientOptions>({
+      store: redisStore,
+      url: 'redis://my-redis:6379',
+      isGlobal: true,
     }),
   ],
 })

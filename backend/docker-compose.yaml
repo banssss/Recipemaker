@@ -23,6 +23,11 @@ services:
       MYSQL_ROOT_PASSWORD: 'root'
       TZ: Asia/Seoul
       # 혜인님께서 알려주신 TZ Setting. 천사가 따로없는것.
-
     ports:
       - 3306:3306
+
+  # Redis
+  my-redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
