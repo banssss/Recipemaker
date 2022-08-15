@@ -15,8 +15,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'access') {
       //     const result = accessToken.replace('Bearer ', '');
       //     return result;
       //   },
-      secretOrKey: 'myAccessKey',
-      // secretOrKey: process.env.ACCESS_SECRET,
+      secretOrKey: process.env.JWT_ACCESS_SECRET,
       passReqToCallback: true,
     });
   }

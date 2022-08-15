@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as jwt from 'jsonwebtoken';
 
+const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, LOGIN_REDIRECT_URL } =
+  process.env;
 @Injectable()
 export class AuthsService {
   constructor(
@@ -14,8 +16,7 @@ export class AuthsService {
   setRefreshToken({ user, res }) {
     const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
-      // { secret: process.env.REFRESH_SECRET, expiresIn: '2w' },
-      { secret: 'myRefreshKey', expiresIn: '2w' },
+      { secret: JWT_REFRESH_SECRET, expiresIn: '2w' },
     );
 
     // 개발환경
@@ -30,8 +31,7 @@ export class AuthsService {
   getAccessToken({ user }) {
     return this.jwtService.sign(
       { email: user.email, sub: user.id },
-      // { secret: process.env.ACCESS_SECRET, expiresIn: '1h' },
-      { secret: 'myAccessKey', expiresIn: '1h' },
+      { secret: JWT_ACCESS_SECRET, expiresIn: '1h' },
     );
   }
 
@@ -49,19 +49,14 @@ export class AuthsService {
     }
     // 3. 로그인 (AccessToken 만들어서 프론트에 주기)
     this.setRefreshToken({ user, res });
-    // res.redirect(process.env.LOGIN_REDIRECT_URL);
-    res.redirect(
-      'http://localhost:5500/codecamp-backend-04/main-project/frontend/login/index.html',
-    ); // for code review
+    res.redirect(LOGIN_REDIRECT_URL);
   }
 
   // jsonwebtoken 을 이용한 토큰 검증
   verifyTokens({ accessToken, refreshToken }) {
     try {
-      const validAccessToken = jwt.verify(accessToken, 'myAccessKey');
-      const validRefreshToken = jwt.verify(refreshToken, 'myRefreshKey');
-      // const validAccessToken = jwt.verify(accessToken, process.env.ACCESS_SECRET);
-      // const validRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+      const validAccessToken = jwt.verify(accessToken, JWT_ACCESS_SECRET);
+      const validRefreshToken = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
       if (
         typeof validAccessToken === 'object' &&
         typeof validRefreshToken === 'object'

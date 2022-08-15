@@ -6,8 +6,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      // callbackURL: process.env.GOOGLE_CALLBACK_URL,
-      callbackURL: 'http://localhost:3000/login/google', // For code review
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
       scope: ['email', 'profile'],
       // google api에서 허용한 부분들을 아래와 같이 추가 가능.
       // scope: [
