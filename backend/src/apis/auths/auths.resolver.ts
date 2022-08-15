@@ -92,10 +92,12 @@ export class AuthsResolver {
     const refreshTokenExp = validRefreshToken.exp;
     const refreshTokenTtl = refreshTokenExp - Number(String(now).slice(0, -3));
 
-    // Redis에 토큰 저장
-    await this.cacheManager.set(`accessToken:${accessToken}`, 'accessToken', {
-      ttl: accessTokenTtl,
-    });
+    // Redis에 토큰 저장 (redis - blacklist 생성)
+    await this.cacheManager.set(
+      `accessToken:${accessToken}`,
+      'accessToken', //
+      { ttl: accessTokenTtl },
+    );
     await this.cacheManager.set(
       `refreshToken:${refreshToken}`,
       'refreshToken',
