@@ -1,4 +1,4 @@
-# createUser
+# createUser ========================================================
 
 mutation{
   createUser(
@@ -23,7 +23,7 @@ mutation{
   }
 }
 
-# userLogin
+# userLogin =========================================================
 
 mutation{
   userLogin(
@@ -32,19 +32,19 @@ mutation{
   )
 }
 
-# graphql header
+# graphql header ====================================================
 
 {
   "Authorization" : "Bearer YOUR_ACCESS_TOKEN"
 }
 
-# logout
+# logout ============================================================
 
 mutation{
   logout
 }
 
-# fetchLoginUser
+# fetchLoginUser ====================================================
 
 query{
   fetchLoginUser{
@@ -56,4 +56,103 @@ query{
 
 mutation{
   restoreAccessToken
+}
+
+# createProductsCategory ===========================================
+
+mutation{
+  createProductsCategory(name:"찌개"){
+    id
+    name
+  }
+}
+
+# createProduct (1) ================================================
+
+mutation{
+  createProduct(
+    createProductInput:{
+      productName:"연남동 김치찌개 밀키트",
+      price:14900,
+      termValidity:"2022-10-24",
+      productWeight:1600,
+      productDescription:"삽겹살이 통째로 들어간 통 삼겹 김치찌개 밀키트",
+      amount:35,
+      productsCategoryId:"b907d861-5a1e-4193-a69f-bddc4e3161ca",
+      matchRecipe:{
+        recipeTitle:"통 삼겹 김치찌개",
+        recipeSubtitle:"삼겹살을 통으로 넣은 돼지고기 김치찌개",
+        recipeDescription:"맛있어 보이는건 모두 때려넣으세요",
+      }
+      productsTags:["#연남동", "#김치찌개", "#돼지고기김치찌개", "#통삼겹"]
+      productsImgs:[
+        "https://gcp/yndkz_main.jpg",
+        "https://gcp/yndkz_sub.jpg",
+      ]
+    }
+  ){
+    id
+    productName
+    price
+    termValidity
+    productWeight
+    productDescription
+    amount
+    productsCategory{
+      id
+    }
+    matchRecipe{
+      recipeTitle
+      recipeSubtitle
+      recipeDescription
+    }
+    productsTags{
+      name
+    }
+  }
+}
+
+# createProduct (2) ================================================
+
+mutation{
+  createProduct(
+    createProductInput:{
+      productName:"7분 김치찌개 밀키트",
+      price:9900,
+      termValidity:"2022-09-24",
+      productWeight:1100,
+      productDescription:"새로운 마을 식당에서 파는 그 김치찌개!",
+      amount:55,
+      productsCategoryId:"b907d861-5a1e-4193-a69f-bddc4e3161ca",
+      matchRecipe:{
+        recipeTitle:"7분 김치찌개",
+        recipeSubtitle:"7분안에 김치찌개 완성!",
+        recipeDescription:"7분간 기도합니다. 기도메타",
+      }
+      productsTags:["#7분", "#김치찌개", "#돼지고기김치찌개", "#새마을"]
+      productsImgs:[
+        "https://gcp/7minkz_main.jpg",
+        "https://gcp/7minkz_sub.jpg",
+      ]
+    }
+  ){
+    id
+    productName
+    price
+    termValidity
+    productWeight
+    productDescription
+    amount
+    productsCategory{
+      id
+    }
+    matchRecipe{
+      recipeTitle
+      recipeSubtitle
+      recipeDescription
+    }
+    productsTags{
+      name
+    }
+  }
 }

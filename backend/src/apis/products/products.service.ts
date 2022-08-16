@@ -1,5 +1,12 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
 import { FilesService } from '../files/files.service';
 import { ProductsImg } from '../productsImgs/entities/productsImg.entity';
@@ -27,6 +34,13 @@ export class ProductsService {
 
     // files service
     private readonly filesService: FilesService,
+
+    // 엘라스틱서치를 사용하기 위한 주입
+    private readonly elasticsearchService: ElasticsearchService,
+
+    // redis 사용을 위한 cacheManager 선언
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   // fetchProducts (모든상품)
@@ -39,6 +53,45 @@ export class ProductsService {
     for (value of result) {
       value.termValidity = new Date(value.termValidity);
     }
+    return result;
+  }
+
+  // fetchProducts by search keyword (모든상품)
+  async searchAll({ search }) {
+    // 1. Redis에 해당 검색어에 대한 검색 결과가 캐시 되어있는지 확인.
+    const myCache = await this.cacheManager.get(search);
+    // 2. 있다면, 캐시되어있는 결과를 클라이언트에 반환
+    if (myCache) {
+      return myCache;
+    }
+    // 3. 없다면 ElasticSearch 에서 해당 검색어 검색.
+    const esResult = await this.elasticsearchService.search({
+      index: 'myproduct04',
+      query: {
+        // 3-a. 클라이언트에서 받은 검색어를 match 쿼리를 이용하여 상품 이름에서 검색.
+        match: { productname: search },
+      },
+    });
+
+    // 4. ElasticSearch에서 조회한 결과를 Redis에 저장.
+    const productIds = esResult.hits.hits.map((product) => {
+      return product._source['id'];
+    });
+
+    // Question : ES 을 찍었는데도 결국 MySQL 을 찍게 되었다. 옳은 로직일까..
+    const result = await Promise.all(
+      productIds.map(async (id) => {
+        const product = await this.productRepository.findOne({
+          where: { id },
+        });
+        return product;
+      }),
+    );
+
+    await this.cacheManager.set(search, result, {
+      ttl: 1800, // 30min
+    });
+    // 5. 조회한 결과 ([Product]) 를 클라이언트에 반환.
     return result;
   }
 

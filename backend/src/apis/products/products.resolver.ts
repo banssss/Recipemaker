@@ -12,7 +12,11 @@ export class ProductsResolver {
 
   // 모든 Product 조회
   @Query(() => [Product]) // Product 의 배열형태로 리턴.
-  fetchProducts() {
+  fetchProducts(
+    @Args({ name: 'search', nullable: true }) search: string, //
+  ) {
+    // 검색어가 입력되었다면, 검색하여 출력하는 과정 진행
+    if (search) return this.productsService.searchAll({ search });
     return this.productsService.findAll();
   }
 
@@ -32,11 +36,11 @@ export class ProductsResolver {
 
   // 새로운 Product 생성.
   @Mutation(() => Product) // 생성한 Product 를 return 으로 설정하여 입력내용을 표기.
-  async createProduct(
+  createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput, //
   ) {
     // 상품의 유통기한 확인하기
-    await this.productsService.checkTermValidityOnCreate({
+    this.productsService.checkTermValidityOnCreate({
       createProductInput,
     });
     // 상품 등록하기

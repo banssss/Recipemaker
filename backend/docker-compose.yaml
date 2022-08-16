@@ -11,9 +11,8 @@ services:
       - 3000:3000
     env_file:
       - ./.env
-    environment:
-      - TZ=Asia/Seoul
-      # 혜인님께서 알려주신 TZ Setting. 천사가 따로없는것.
+    # environment:
+    #   - TZ=Asia/Seoul
 
   my-database:
     platform: linux/x86_64
@@ -21,8 +20,7 @@ services:
     environment:
       MYSQL_DATABASE: 'mydocker04'
       MYSQL_ROOT_PASSWORD: 'root'
-      TZ: Asia/Seoul
-      # 혜인님께서 알려주신 TZ Setting. 천사가 따로없는것.
+      # TZ: Asia/Seoul
     ports:
       - 3306:3306
 
@@ -31,3 +29,18 @@ services:
     image: redis:latest
     ports:
       - 6379:6379
+
+  # Elasticsearch
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+
+  # Logstash - ./elk/logstash/logstash.conf 설정
+  logstash:
+    image: logstash:7.17.0
+    volumes:
+      - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar

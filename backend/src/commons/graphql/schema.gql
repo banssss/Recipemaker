@@ -95,7 +95,7 @@ enum PAYMENT_STATUS_ENUM {
 }
 
 type Query {
-  fetchProducts: [Product!]!
+  fetchProducts(search: String): [Product!]!
   fetchProductsWithDeleted: [Product!]!
   fetchProduct(productId: String!): Product!
   fetchProductsCategories: [ProductsCategory!]!

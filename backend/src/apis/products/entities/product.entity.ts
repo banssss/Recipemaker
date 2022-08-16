@@ -12,6 +12,7 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -49,6 +50,10 @@ export class Product {
   // softDelete 를 위한 @DeleteDateColumn()
   @DeleteDateColumn()
   deletedAt: Date;
+
+  // Update 시간을 기록하기 위한 Column
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   // 제품은 제품_카테고리와 N:1 관계
   @ManyToOne(() => ProductsCategory)

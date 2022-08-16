@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilesService } from '../files/files.service';
 import { ProductsImg } from '../productsImgs/entities/productsImg.entity';
@@ -11,11 +12,15 @@ import { ProductsService } from './products.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Product, // Repository 추가를 위한 모듈 추가.
+      Product, //
       ProductsTag,
       ProductsImg,
       Recipe,
     ]),
+    // ElasticSearch 적용을 위한 Module Import
+    ElasticsearchModule.register({
+      node: 'http://elasticsearch:9200', //
+    }),
   ],
   providers: [
     ProductsResolver, //
