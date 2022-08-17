@@ -1,0 +1,42 @@
+{
+  "template": "search-product-name",
+  "index_patterns": ["search-product-*"],
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "search-product-name_analyzer": {
+          "tokenizer": "my_ngram_tokenizer",
+          "filter": "my_stop_filter"
+        }
+      },
+      "filter": {
+        "my_stop_filter": {
+          "type": "stop",
+          "stopwords": ["the", "in", "of", "for", "on", "by"]
+        }
+      },
+      "tokenizer": {
+        "my_ngram_tokenizer": {
+          "type": "nGram",
+          "min_gram": "1",
+          "max_gram": "10"
+        }
+      }
+    },
+    "max_ngram_diff": "20"
+  },
+  "mappings": {
+    "properties": {
+      "productname": {
+        "type": "text",
+        "analyzer": "search-product-name_analyzer"
+      },
+      "price": {
+        "type": "long"
+      },
+      "productdescription": {
+        "type": "text"
+      }
+    }
+  }
+}

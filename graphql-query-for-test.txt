@@ -201,3 +201,48 @@ mutation{
     }
   }
 }
+
+# createProduct (4) ================================================
+
+mutation{
+  createProduct(
+    createProductInput:{
+      productName:"로제 파스타 밀키트",
+      price:12900,
+      termValidity:"2022-10-25",
+      productWeight:700,
+      productDescription:"부드러운 크림+토마토 로제 파스타 밀키트",
+      amount:15,
+      productsCategoryId:"5cd59fc2-42a0-4877-8142-5f8d9c2c6431",
+      matchRecipe:{
+        recipeTitle:"로제 파스타",
+        recipeSubtitle:"좋은 퓨전, 로제파스타",
+        recipeDescription:"맛있겠다...",
+      }
+      productsTags:["#파스타", "#로제", "#크림", "#토마토"]
+      productsImgs:[
+        "https://gcp/rose_pastar_main.jpg",
+        "https://gcp/rose_pastar_sub.jpg",
+      ]
+    }
+  ){
+    id
+    productName
+    price
+    termValidity
+    productWeight
+    productDescription
+    amount
+    productsCategory{
+      id
+    }
+    matchRecipe{
+      recipeTitle
+      recipeSubtitle
+      recipeDescription
+    }
+    productsTags{
+      name
+    }
+  }
+}

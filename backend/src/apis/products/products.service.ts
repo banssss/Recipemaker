@@ -1,4 +1,8 @@
 import {
+  SearchResponse,
+  AggregationsAggregate,
+} from '@elastic/elasticsearch/lib/api/types';
+import {
   CACHE_MANAGER,
   Inject,
   Injectable,
@@ -60,24 +64,52 @@ export class ProductsService {
   async searchAll({ search }) {
     // 1. Redis에 해당 검색어에 대한 검색 결과가 캐시 되어있는지 확인.
     const myCache = await this.cacheManager.get(search);
-    // 2. 있다면, 캐시되어있는 결과를 클라이언트에 반환
+    // 2. Redis에 Cache가 등록되어 있다면, 캐시되어있는 결과를 클라이언트에 반환
     if (myCache) {
       return myCache;
     }
-    // 3. 없다면 ElasticSearch 에서 해당 검색어 검색.
-    const esResult = await this.elasticsearchService.search({
-      index: 'myproduct04',
-      query: {
-        // 3-a. 클라이언트에서 받은 검색어를 match 쿼리를 이용하여 상품 이름에서 검색.
-        match: { productname: search },
-      },
-    });
+
+    // 3. Redis에 등록된 Cache가 없다면 ElasticSearch 에서 해당 검색어 검색.
+    let esResult: SearchResponse<
+      unknown,
+      Record<string, AggregationsAggregate>
+    >;
+
+    // 검색어가 한 글자일 경우 - prefix 적용한 auto-complete 검색 실행
+    if (search.length === 1) {
+      console.log('===1===');
+      console.log(search);
+      esResult = await this.elasticsearchService.search({
+        index: 'search-product-name',
+        query: {
+          bool: {
+            // ***** prefix를 적용한 Query DSL - auto-complete ***** //
+            should: [{ prefix: { productname: search } }],
+          },
+        },
+      });
+      console.log('===1=2==');
+      console.log(JSON.stringify(esResult, null, '  '));
+      //검색어가 한 글자가 아닐 경우 - match 이용한 검색
+    } else {
+      console.log('===2===');
+      console.log(search);
+      esResult = await this.elasticsearchService.search({
+        index: 'search-product-name',
+        query: {
+          // 3-a. 클라이언트에서 받은 검색어를 match 쿼리를 이용하여 상품 이름에서 검색.
+          match: { productname: search },
+        },
+      });
+      console.log('===2=2==');
+      console.log(JSON.stringify(esResult, null, '  '));
+    }
 
     // 4. ElasticSearch에서 조회한 결과를 Redis에 저장.
     // *** 검색결과로 보여질 값들만 전달하기 - logstash에서 update한 column들로 *** //
     const products = esResult.hits.hits.map((esProduct) => {
       const product = {
-        id: esProduct._source['id'],
+        id: esProduct._id,
         productName: esProduct._source['productname'],
         price: esProduct._source['price'],
         productDescription: esProduct._source['productdescription'],
@@ -89,6 +121,7 @@ export class ProductsService {
       ttl: 60, // 60sec
     });
     // 5. 조회한 결과 ([Product]) 를 클라이언트에 반환.
+    console.log('----', products);
     return products;
   }
 
