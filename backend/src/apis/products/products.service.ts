@@ -74,25 +74,22 @@ export class ProductsService {
     });
 
     // 4. ElasticSearch에서 조회한 결과를 Redis에 저장.
-    const productIds = esResult.hits.hits.map((product) => {
-      return product._source['id'];
+    // *** 검색결과로 보여질 값들만 전달하기 - logstash에서 update한 column들로 *** //
+    const products = esResult.hits.hits.map((esProduct) => {
+      const product = {
+        id: esProduct._source['id'],
+        productName: esProduct._source['productname'],
+        price: esProduct._source['price'],
+        productDescription: esProduct._source['productdescription'],
+      };
+      return product;
     });
-
-    // Question : ES 을 찍었는데도 결국 MySQL 을 찍게 되었다. 옳은 로직일까..
-    const result = await Promise.all(
-      productIds.map(async (id) => {
-        const product = await this.productRepository.findOne({
-          where: { id },
-        });
-        return product;
-      }),
-    );
-
-    await this.cacheManager.set(search, result, {
-      ttl: 1800, // 30min
+    // Redis 에 검색어를 key 값으로, 검색결과를 value 값으로 set
+    await this.cacheManager.set(search, products, {
+      ttl: 60, // 60sec
     });
     // 5. 조회한 결과 ([Product]) 를 클라이언트에 반환.
-    return result;
+    return products;
   }
 
   // fetchProductsWithDeleted (삭제된 상품을 포함한 모든 상품)

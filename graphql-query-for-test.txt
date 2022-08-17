@@ -156,3 +156,48 @@ mutation{
     }
   }
 }
+
+# createProduct (3) ================================================
+
+mutation{
+  createProduct(
+    createProductInput:{
+      productName:"참치 김치찌개 밀키트",
+      price:11900,
+      termValidity:"2022-10-28",
+      productWeight:1000,
+      productDescription:"기본을 지키는 맛! 참치 김치찌개 밀키트",
+      amount:35,
+      productsCategoryId:"81da7b51-0b58-4bcb-a63c-5563f4e28e74",
+      matchRecipe:{
+        recipeTitle:"참치 김치찌개",
+        recipeSubtitle:"참치로 감칠맛을 잡은, 참치 김치찌개",
+        recipeDescription:"당연히 통조림참치입니다.",
+      }
+      productsTags:["#참치", "#김치찌개", "#돼지고기김치찌개", "#참치통조림"]
+      productsImgs:[
+        "https://gcp/tunakz_main.jpg",
+        "https://gcp/tunakz_sub.jpg",
+      ]
+    }
+  ){
+    id
+    productName
+    price
+    termValidity
+    productWeight
+    productDescription
+    amount
+    productsCategory{
+      id
+    }
+    matchRecipe{
+      recipeTitle
+      recipeSubtitle
+      recipeDescription
+    }
+    productsTags{
+      name
+    }
+  }
+}

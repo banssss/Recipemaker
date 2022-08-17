@@ -16,7 +16,11 @@ export class ProductsResolver {
     @Args({ name: 'search', nullable: true }) search: string, //
   ) {
     // 검색어가 입력되었다면, 검색하여 출력하는 과정 진행
-    if (search) return this.productsService.searchAll({ search });
+    if (search) {
+      // 검색어가 입력될 때, 검색결과로 한정된 데이터만 가져온다. (with ES, Logstash, Redis)
+      // (id, productName, price, productDescription)
+      return this.productsService.searchAll({ search });
+    }
     return this.productsService.findAll();
   }
 
