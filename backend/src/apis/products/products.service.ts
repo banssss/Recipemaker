@@ -77,8 +77,6 @@ export class ProductsService {
 
     // 검색어가 한 글자일 경우 - prefix 적용한 auto-complete 검색 실행
     if (search.length === 1) {
-      console.log('===1===');
-      console.log(search);
       esResult = await this.elasticsearchService.search({
         index: 'search-product-name',
         query: {
@@ -88,12 +86,8 @@ export class ProductsService {
           },
         },
       });
-      console.log('===1=2==');
-      console.log(JSON.stringify(esResult, null, '  '));
       //검색어가 한 글자가 아닐 경우 - match 이용한 검색
     } else {
-      console.log('===2===');
-      console.log(search);
       esResult = await this.elasticsearchService.search({
         index: 'search-product-name',
         query: {
@@ -105,8 +99,6 @@ export class ProductsService {
           term: { productname: search },
         },
       });
-      console.log('===2=2==');
-      console.log(JSON.stringify(esResult, null, '  '));
     }
 
     // 4. ElasticSearch에서 조회한 결과를 Redis에 저장.
@@ -125,7 +117,6 @@ export class ProductsService {
       ttl: 60, // 60sec
     });
     // 5. 조회한 결과 ([Product]) 를 클라이언트에 반환.
-    console.log('----', products);
     return products;
   }
 
