@@ -97,8 +97,12 @@ export class ProductsService {
       esResult = await this.elasticsearchService.search({
         index: 'search-product-name',
         query: {
-          // 3-a. 클라이언트에서 받은 검색어를 match 쿼리를 이용하여 상품 이름에서 검색.
-          match: { productname: search },
+          // // 3-a. 클라이언트에서 받은 검색어를 match 쿼리를 이용하여 상품 이름에서 검색.
+          // // match 를 이용하면, 검색어 또한 '토큰화' 되어 재검색
+          // match: { productname: search },
+          // 3-a. 클라이언트에서 받은 검색어를 term 쿼리를 이용하여 상품 이름에서 검색.
+          // term 을 이용하면, 검색어를 토큰화하지 않고 정확히 검색
+          term: { productname: search },
         },
       });
       console.log('===2=2==');
