@@ -63,7 +63,9 @@ export class ProductsService {
   // fetchProducts by search keyword (모든상품)
   async searchAll({ search }) {
     // 1. Redis에 해당 검색어에 대한 검색 결과가 캐시 되어있는지 확인.
+    console.time('Redis 캐시된 값 가져오기'); // console.time 테스트
     const myCache = await this.cacheManager.get(search);
+    console.timeEnd('Redis 캐시된 값 가져오기'); // console.time 테스트
     // 2. Redis에 Cache가 등록되어 있다면, 캐시되어있는 결과를 클라이언트에 반환
     if (myCache) {
       return myCache;
