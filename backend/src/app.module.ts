@@ -31,6 +31,11 @@ import * as redisStore from 'cache-manager-redis-store';
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }), // GraphQL Module 설정 추가
+      // Cors 추가
+      cors: {
+        origin: ['http://localhost:3000'],
+        credential: true,
+      },
     }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mysql',
