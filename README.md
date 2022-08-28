@@ -27,11 +27,11 @@
 
 ## ERD 설계
 
-![](../mainproject-erd.png)
+![](./mainproject-erd.png)
 
 ## 파이프라인 (in Search Process)
 
-![](../mainproject-searchpipeline.png)
+![](./mainproject-searchpipeline.png)
 
 ## 프로젝트 설치 및 실행
 
