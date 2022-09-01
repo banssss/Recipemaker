@@ -1,6 +1,5 @@
-import { Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Mutation, Resolver } from '@nestjs/graphql';
 import { IamportsService } from './iamports.service';
-import { IContext } from 'src/commons/type/context';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthRefreshGuard } from 'src/commons/auth/gql-auth.guard';
 
@@ -12,13 +11,9 @@ export class IamportsResolver {
 
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => Boolean)
-  async createIamportAuth(
-    @Context() Context: IContext, //
-  ) {
+  async createIamportAuth() {
     const token = await this.iamportsService.getImpAccessToken();
-    const today = new Date().getTime();
-    console.log(token);
-    console.log(today);
+    // const today = new Date().getTime();
     return token ? true : false;
   }
 }
